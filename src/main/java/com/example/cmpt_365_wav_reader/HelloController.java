@@ -25,8 +25,9 @@ public class HelloController {
     public void switchToMenuScreens(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("wavReader.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root);
+        scene = new Scene(root, 900, 400);
         stage.setScene(scene);
         stage.show();
+
     }
 }
