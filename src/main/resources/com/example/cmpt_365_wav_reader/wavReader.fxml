@@ -12,9 +12,11 @@
       <LineChart fx:id="lineChart" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" layoutY="154.0" legendVisible="false" prefHeight="203.0" prefWidth="908.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
+            <NumberAxis fx:id="xAxis" label="Sample Number" />
         </xAxis>
         <yAxis>
           <NumberAxis side="LEFT" />
+            <NumberAxis fx:id="yAxis" label="Amplitude" />
         </yAxis>
       </LineChart>
    </children>
