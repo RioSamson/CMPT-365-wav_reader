@@ -2,27 +2,32 @@ package com.example.cmpt_365_wav_reader;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
+//import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
+//impost java.util.L
 
 public class HelloController {
-//    @FXML
-//    private Label welcomeText;
+
+    @FXML
+    private Label LABEL1;
+    @FXML
+    private Label LABEL2;
 
     private Stage stage;
     private Scene scene;
@@ -34,6 +39,12 @@ public class HelloController {
     NumberAxis yAxis = new NumberAxis();
     @FXML
     private LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+    @FXML
+    private LineChart<Number, Number> lineChart2 = new LineChart<>(xAxis, yAxis);
+//    @FXML
+//    private Label progressBar;
+//    @FXML
+//    private Label waitMessage;
 
     public void chooseFile(ActionEvent event){
         FileChooser fileChooser = new FileChooser();
@@ -46,6 +57,7 @@ public class HelloController {
 
         if (wavFile != null){
             try {
+
                 FileInputStream fileInputStream = new FileInputStream(wavFile);
                 AudioFileFormat af = AudioSystem.getAudioFileFormat(wavFile);
                 byte[] buffer = new byte[4];
@@ -120,26 +132,47 @@ public class HelloController {
 
                 int sampleSize = newSubChunkSize / (numChannels * (bitsPerSample/8));
                 System.out.println("Sample Size: " + sampleSize);
+                LABEL1.setText("Total number of samples: " + sampleSize);
+                LABEL2.setText("Sampling Frequency: " + sampleRate);
 
                 short[] chanel_1 = new short[sampleSize];
+                short[] chanel_2 = new short[sampleSize];
                 String[] xValStrings = new String[sampleSize];
                 for(int i=0; i<sampleSize; i++) {
                     fileInputStream.read(smallBuffer, 0, 2);
                     short amp = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
+                    chanel_1[i] = amp;
                     fileInputStream.read(smallBuffer, 0, 2);
+                    amp = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
 
                     xValStrings[i] = new String(String.valueOf(i));
-                    chanel_1[i] = amp;
+                    chanel_2[i] = amp;
                 }
 
 
                 XYChart.Series<Number, Number> series = new XYChart.Series<>();
+                XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
+                List<XYChart.Data<Number, Number>> chan1List = new ArrayList<>();
+                List<XYChart.Data<Number, Number>> chan2List = new ArrayList<>();
                 for(int i=0; i<sampleSize; i++) {
-                    series.getData().add(new XYChart.Data(xValStrings[i], chanel_1[i]));
-                    System.out.println(i);
+//                    String index = String.valueOf(i);
+                    chan1List.add(i, new XYChart.Data<>(i, chanel_1[i]));
+                    chan2List.add(i, new XYChart.Data<>(i, chanel_2[i]));
+
+//                    series.getData().add(new XYChart.Data(xValStrings[i], chanel_1[i]));
+//                    series2.getData().add(new XYChart.Data(xValStrings[i], chanel_2[i]));
+//                    System.out.println(i);
                 }
 
+                series.getData().addAll(chan1List);
+                series2.getData().addAll(chan2List);
+//
+                lineChart.getData().clear();
+                lineChart2.getData().clear();
+//
                 lineChart.getData().add(series);
+                lineChart2.getData().add(series2);
+
 
             } catch (Exception e) {
                 System.out.println("Error reading file");
