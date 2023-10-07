@@ -49,11 +49,11 @@ public class HelloController {
     public void chooseFile(ActionEvent event){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select your wav file");
-//        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Files", "*.wav"));
-//        File wavFile =  fileChooser.showOpenDialog(null);
-
-        fileChooser.setInitialDirectory(new File("C:\\Users\\User\\Downloads\\test samples\\test samples\\Q1"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("WAV Files", "*.wav"));
         File wavFile =  fileChooser.showOpenDialog(null);
+
+//        fileChooser.setInitialDirectory(new File("C:\\Users\\User\\Downloads\\test samples\\test samples\\Q1"));
+//        File wavFile =  fileChooser.showOpenDialog(null);
 
         if (wavFile != null){
             try {
@@ -97,17 +97,17 @@ public class HelloController {
                 short bitsPerSample = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
 
 
-                System.out.println(riffID);
-                System.out.println(chunkSize);
-                System.out.println("Format: " + format);
-                System.out.println("fmtSubChunk: " + fmtSubchunk);
-                System.out.println("fmtSubChunkSize: " + subChunkSize);
-                System.out.println("audioFormat: " + audioFormat);
-                System.out.println("numChannels: " + numChannels);
-                System.out.println("sampleRate: " + sampleRate);
-                System.out.println("byteRate: " + byteRate);
-                System.out.println("blockAlign: " + blockAlign);
-                System.out.println("bitsPerSample: " + bitsPerSample);
+//                System.out.println(riffID);
+//                System.out.println(chunkSize);
+//                System.out.println("Format: " + format);
+//                System.out.println("fmtSubChunk: " + fmtSubchunk);
+//                System.out.println("fmtSubChunkSize: " + subChunkSize);
+//                System.out.println("audioFormat: " + audioFormat);
+//                System.out.println("numChannels: " + numChannels);
+//                System.out.println("sampleRate: " + sampleRate);
+//                System.out.println("byteRate: " + byteRate);
+//                System.out.println("blockAlign: " + blockAlign);
+//                System.out.println("bitsPerSample: " + bitsPerSample);
 
 
                 boolean dataNotFound = true;
@@ -127,11 +127,11 @@ public class HelloController {
                     }
                 }
 
-                System.out.println("subChunk2ID: " + subChunkName);
-                System.out.println("subChunk2Size: " + newSubChunkSize);
+//                System.out.println("subChunk2ID: " + subChunkName);
+//                System.out.println("subChunk2Size: " + newSubChunkSize);
 
                 int sampleSize = newSubChunkSize / (numChannels * (bitsPerSample/8));
-                System.out.println("Sample Size: " + sampleSize);
+//                System.out.println("Sample Size: " + sampleSize);
                 LABEL1.setText("Total number of samples: " + sampleSize);
                 LABEL2.setText("Sampling Frequency: " + sampleRate);
 
