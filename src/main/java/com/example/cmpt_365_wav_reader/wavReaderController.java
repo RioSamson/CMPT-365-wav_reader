@@ -23,7 +23,11 @@ import java.nio.ByteOrder;
 public class wavReaderController {
 
     @FXML
-    private LineChart<Number, Number> lineChart;
+    NumberAxis xAxis = new NumberAxis();
+    @FXML
+    NumberAxis yAxis = new NumberAxis();
+    @FXML
+    private LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
 
     public void chooseFile(ActionEvent event){
         FileChooser fileChooser = new FileChooser();
@@ -48,7 +52,6 @@ public class wavReaderController {
                 int chunkSize = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 
                 fileInputStream.read(buffer);
-//                String format = new String(af.getType().toString());
                 String format = new String(buffer, 0, 4);
 
                 fileInputStream.read(buffer);
@@ -57,16 +60,13 @@ public class wavReaderController {
                 fileInputStream.read(buffer);
                 int subChunkSize = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 
-//                smallBuffer.sk
                 fileInputStream.read(smallBuffer, 0, 2);
                 String audioFormat = new String(af.getFormat().getEncoding().toString());
 
                 fileInputStream.read(smallBuffer, 0, 2);
-//                fileInputStream.read(buffer); //to put the buffer at the right spot
                 int numChannels = af.getFormat().getChannels();
 
                 fileInputStream.read(buffer, 0, 4);
-//                int sampleRate = (int) af.getFormat().getSampleRate ();
                 int sampleRate = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 
                 fileInputStream.read(buffer);
@@ -77,23 +77,6 @@ public class wavReaderController {
 
                 fileInputStream.read(smallBuffer, 0, 2);
                 short bitsPerSample = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
-
-//                fileInputStream.read(buffer);
-//                String subChunk2ID = new String(buffer, 0, 4);
-//
-//                fileInputStream.read(buffer);
-//                int subChunk2Size = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
-
-//                for(int i=0; i<50; i++){
-//                    fileInputStream.read(smallBuffer, 0, 2);
-//                    int p = ByteBuffer.wrap(new byte[]{0, 0, smallBuffer[0], smallBuffer[1]}).order(ByteOrder.LITTLE_ENDIAN).getInt();
-//                    System.out.println(p);
-//                }
-
-//                fileInputStream.read(smallBuffer);
-//                int sampleOne = ByteBuffer.wrap(new byte[]{0, 0, smallBuffer[0], smallBuffer[1]}).order(ByteOrder.LITTLE_ENDIAN).getInt();
-
-
 
 
                 System.out.println(riffID);
@@ -118,14 +101,11 @@ public class wavReaderController {
 
                     fileInputStream.read(buffer);
                     newSubChunkSize = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
-//                    System.out.println(subChunkName);
 
                     if (subChunkName.equals("data")){
                         dataNotFound = false;
-//                        System.out.println("good");
                     } else {
                         fileInputStream.skip(newSubChunkSize);
-//                        System.out.println("skipping by: " + newSubChunkSize);
                     }
                 }
 
@@ -135,50 +115,26 @@ public class wavReaderController {
                 int sampleSize = newSubChunkSize / (numChannels * (bitsPerSample/8));
                 System.out.println("Sample Size: " + sampleSize);
 
-//                for(int i=0; i<90000; i++){
-//                    fileInputStream.read(smallBuffer, 0, 2);
-//                    short amp = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
-////                    System.out.println("channel 1: " + amp);
-//
-//                    fileInputStream.read(smallBuffer, 0, 2);
-////                    amp = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
-////                    System.out.println("channel 2: " + amp);
-//
-//                    int newAmp = (int) amp/80;
-//                    if(newAmp > 0) {
-//                        for (int j = 0; j < newAmp; j++) {
-//                            System.out.print("*");
-//                        }
-//                        System.out.println();
-//                    }
-//
-//                }
-
-
-                //-----------------------
-//                final NumberAxis xAxis = new NumberAxis();
-//                final NumberAxis yAxis = new NumberAxis();
-
-                XYChart.Series series = new XYChart.Series();
-
-//                series.getData().add(new XYChart.Data("1", 5));
-//                series.getData().add(new XYChart.Data("2", 200));
-//                series.getData().add(new XYChart.Data("3", 2));
-
+                short[] chanel_1 = new short[sampleSize];
+                String[] xValStrings = new String[sampleSize];
                 for(int i=0; i<sampleSize; i++) {
                     fileInputStream.read(smallBuffer, 0, 2);
                     short amp = ByteBuffer.wrap(smallBuffer).order(ByteOrder.LITTLE_ENDIAN).getShort();
                     fileInputStream.read(smallBuffer, 0, 2);
 
-                    String xVal = new String(String.valueOf(i));
-                    series.getData().add(new XYChart.Data(xVal, amp));
-//                    System.out.println(i);
+                    xValStrings[i] = new String(String.valueOf(i));
+                    chanel_1[i] = amp;
+                }
+
+
+                XYChart.Series<Number, Number> series = new XYChart.Series<>();
+                for(int i=0; i<sampleSize; i++) {
+                    series.getData().add(new XYChart.Data(xValStrings[i], chanel_1[i]));
+                    System.out.println(i);
                 }
 
                 lineChart.getData().add(series);
 
-
-                //-------------------------
             } catch (Exception e) {
                 System.out.println("Error reading file");
             }
@@ -188,74 +144,3 @@ public class wavReaderController {
     }
 
 }
-
-
-
-
-//------------------------------------------------------------------------------
-
-
-//--------------------------------------------
-//                AudioInputStream inStream = AudioSystem.getAudioInputStream(wavFile);
-//                BufferedInputStream bStream = new BufferedInputStream(inStream);
-//                AudioFileFormat af = AudioSystem.getAudioFileFormat(wavFile);
-//                FileInputStream fileInputStream = new FileInputStream(wavFile);
-////                AudioFormat af = inStream.getFormat();
-//                byte[] buffer = new byte[4];
-//
-//                System.out.println("format: " + af);
-//                System.out.println("Sample rate: " + af.getType());
-//                System.out.println("Sample rate: " + af.getFormat().getSampleRate());
-//                System.out.println("Sample rate: " + af.getFormat().getSampleSizeInBits());
-//
-//                //chunk ID
-//                fileInputStream.read(buffer);
-//                String chunkID;
-//                chunkID = new String(buffer);
-//                System.out.println("Chunk ID: " + chunkID);
-//
-//                //Chunk Size
-//                fileInputStream.read(buffer);
-//                int chunkSize = ((buffer[3] & 0xFF) << 24) |
-//                        ((buffer[2] & 0xFF) << 16) |
-//                        ((buffer[1] & 0xFF) << 8) |
-//                        (buffer[0] & 0xFF);
-//                System.out.println("Chunk Size: " + chunkSize);
-//
-//                //Format
-//                fileInputStream.read(buffer);
-//                String format = new String(af.getType().toString());
-//                System.out.println("Format: " + format);
-//
-//
-//
-//
-//
-//
-////                FileInputStream fileInputStream = new FileInputStream(wavFile);
-//////                DataInputStream dataInputStream = new DataInputStream(fileInputStream);
-////                byte[] buffer = new byte[4];
-////                int bytesRead;
-////                int num = 1;
-////                while((bytesRead = fileInputStream.read(buffer)) != -1) {
-//////                    System.out.println("iteration: " + num + " Bytes read: " + bytesRead);
-//////                    System.out.println(new String(buffer));
-//////                    System.out.println( buffer[0] +" " + buffer[1] +" " + buffer[2] +" " + buffer[3] +" " );
-////
-////                    int value = ((buffer[3] & 0xFF) << 24) |
-////                            ((buffer[2] & 0xFF) << 16) |
-////                            ((buffer[1] & 0xFF) << 8) |
-////                            (buffer[0] & 0xFF);
-//////
-//////                  System.out.println(new String(buffer));
-////                    System.out.println(value);
-////
-//////                    System.out.println((int) buffer());
-////                    num++;
-////                    if(num == 44){
-////                        break;
-////                    }
-////                }
-
-
-//---------------------------------------------------------------
